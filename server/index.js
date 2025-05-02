@@ -10,11 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/posts', postsRouter);
+app.use('/api/posts', postsRouter); // Changed from '/posts' to '/api/posts'
 
-mongoose.connect(process.env.MONGODB_URI)
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB error:', err));
+  .catch((err) => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
